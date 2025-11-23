@@ -1,348 +1,290 @@
 import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
-// --- CONSTANTS ---
-const EMOJIS = ['💀', '🗿', '🤡', '🔥', '🚽', '🧢', '💅', '💩', '👻', '👺', '🅱️', '🥶', '💊'];
-const PHRASES = ["GYATT", "Only in Ohio", "L + Ratio", "Skibidi Bop", "W Rizz", "Cringe", "Let him cook", "SHEESH", "Glazing", "Fanum Tax", "Sus", "Baka"];
-const LOOT_TX = ['💩', '👟', '🧢', '👕', '💍', '👑', '🚗', '🏠', '🏝️', '🪐'];
-const NOTIFICATIONS = ["Discord Ping!", "Mom calling...", "Low Battery", "Virus Detected", "Free V-Bucks"];
+const EMOJIS = ['💀', '🗿', '🤡', '🔥', '🚽', '🧢', '💅', '💩', '👻', '👺', '🅱️', '🥶', '💊', '🦎', '🍔'];
+const PHRASES = ["GYATT", "Ohio", "L + Ratio", "Skibidi", "Rizz", "Cringe", "Cook", "SHEESH", "Glazing", "Fanum", "Sus", "Baka", "Cap", "Bet", "Slaps"];
+const NOTIFS = ["Discord Ping!", "Mom calling...", "Low Battery", "Virus Detected", "Free V-Bucks", "IRS Audit", "Hot Singles nearby"];
+const STOCKS = ["GME", "DOGE", "RIZZ", "SKBD", "OHIO"];
 
 function App() {
-  // --- STATE HELL (Triple Size) ---
-  // Core Clicker
-  const [count, setCount] = useState(0);
-  const [clickPower, setClickPower] = useState(1);
-  const [autoClicker, setAutoClicker] = useState(0);
+  // --- STATE HELL: EXPANDED EDITION ---
+  
+  // Core & Economy
+  const [points, setPoints] = useState(0);
+  const [cps, setCps] = useState(0);
+  const [clickMult, setClickMult] = useState(1);
+  const [vBucks, setVBucks] = useState(0);
+  const [socialCredit, setSocialCredit] = useState(1000);
+  const [crypto, setCrypto] = useState(0.0000); // Feature 41: Crypto Miner
 
-  // Social & Stats
-  const [rizzLevel, setRizzLevel] = useState(50);
-  const [mewingStreak, setMewingStreak] = useState(0);
-  const [socialCredit, setSocialCredit] = useState(1000); // Feature: Social Credit
-  const [susMeter, setSusMeter] = useState(0);
-  const [fanumTax, setFanumTax] = useState(0);
+  // Stats & Status
+  const [rizz, setRizz] = useState(50);
+  const [mewing, setMewing] = useState(0);
+  const [sus, setSus] = useState(0);
+  const [attention, setAttention] = useState(100);
+  const [battery, setBattery] = useState(100); // Feature 42: Battery Drain
+  const [brainrotLevel, setBrainrotLevel] = useState(1); // Feature 43: Level System
 
-  // Modes & Visuals
+  // Visual Modes
   const [isOhio, setIsOhio] = useState(false);
   const [isSigma, setIsSigma] = useState(false);
-  const [deepFried, setDeepFried] = useState(false); // Feature: Deep Fry Filter
-  const [backrooms, setBackrooms] = useState(false); // Feature: Backrooms Mode
-  const [grimaceShake, setGrimaceShake] = useState(false);
+  const [deepFried, setDeepFried] = useState(false);
+  const [backrooms, setBackrooms] = useState(false);
+  const [fbiRaid, setFbiRaid] = useState(false); // Feature 44: FBI Raid Event
+  const [ascended, setAscended] = useState(false); // Feature 45: Ascension Mode
+  const [screenCracked, setScreenCracked] = useState(false); // Feature 46: Screen Crack
 
-  // UI Chaos
+  // Minigame 1: Subway Surfers
+  const [subwayPos, setSubwayPos] = useState(50);
+  const [subwayObs, setSubwayObs] = useState(100);
+  
+  // Minigame 2: Flappy Bird (Feature 47)
+  const [birdY, setBirdY] = useState(50);
+  const [birdVel, setBirdVel] = useState(0);
+  const [pipeX, setPipeX] = useState(100);
+  const [pipeH, setPipeH] = useState(50);
+  
+  // Minigame 3: Skibidi Pet (Tamagotchi) (Feature 48)
+  const [petHunger, setPetHunger] = useState(100);
+  const [petStatus, setPetStatus] = useState("Alive");
+
+  // Chaos Elements
   const [popups, setPopups] = useState([]);
-  const [chatLog, setChatLog] = useState(["NPC: Is this real chat?"]);
-  const [notifications, setNotifications] = useState([]); // Feature: Fake Push Notifs
-  const [vineBooms, setVineBooms] = useState([]); // Feature: Visual Vine Booms
+  const [chat, setChat] = useState(["System: Welcome to Hell"]);
+  const [mouseTrail, setMouseTrail] = useState([]); // Feature 49: Mouse Trail
+  const [dvd, setDvd] = useState({x:100, y:100, dx:2, dy:2, col:'red'});
+  const [ipAddress, setIpAddress] = useState("192.168.0.1"); // Feature 50: Fake IP Leak
+  const [stockPrices, setStockPrices] = useState(STOCKS.map(() => 100)); // Feature 51: Stock Market
+  const [virusProgress, setVirusProgress] = useState(0); // Feature 52: Fake Virus Download
 
-  // Minigames
-  // 1. Subway Surfers
-  const [runnerPos, setRunnerPos] = useState(50);
-  const [obstaclePos, setObstaclePos] = useState(100);
-  const [runnerScore, setRunnerScore] = useState(0);
-  
-  // 2. DVD Logo
-  const [dvdPos, setDvdPos] = useState({ x: 100, y: 100, dx: 3, dy: 3 }); // Feature: DVD Screensaver
-  const [dvdColor, setDvdColor] = useState('red');
+  const reqRef = useRef();
 
-  // 3. Case Opening (Gamble)
-  const [isSpinning, setIsSpinning] = useState(false); // Feature: Gamble Core
-  const [spinOffset, setSpinOffset] = useState(0);
-  const [lastWin, setLastWin] = useState(null);
+  // --- GAME LOOPS ---
 
-  // 4. Attention Span Decay
-  const [attentionSpan, setAttentionSpan] = useState(100); // Feature: Attention Span Mechanic
-  
-  // 5. V-Bucks Generator
-  const [vBucks, setVBucks] = useState(0); // Feature: Fake Currency
-
-  const requestRef = useRef();
-
-  // --- LOOPS & EFFECTS ---
-
-  // LOOP 1: Game Physics & Brainrot Updates (60FPS)
+  // LOOP 1: High Speed Physics (60FPS)
   useEffect(() => {
     const loop = () => {
-      // Runner Logic
-      setObstaclePos(prev => {
-        if (prev < -10) {
-          setRunnerScore(s => s + 1);
-          return 100 + Math.random() * 50;
+      // Subway Logic
+      setSubwayObs(p => {
+        if (p < -10) return 100 + Math.random() * 50;
+        return p - 2;
+      });
+
+      // Flappy Logic
+      setBirdY(y => Math.min(130, Math.max(0, y + birdVel)));
+      setBirdVel(v => v + 0.5); // Gravity
+      setPipeX(x => {
+        if (x < -20) {
+            setPipeH(20 + Math.random() * 80);
+            return 100;
         }
-        return prev - (2 + (runnerScore * 0.1)); // Gets faster
+        return x - 1.5;
       });
 
-      // DVD Logo Logic
-      setDvdPos(pos => {
-        let newX = pos.x + pos.dx;
-        let newY = pos.y + pos.dy;
-        let newDx = pos.dx;
-        let newDy = pos.dy;
-        let collided = false;
-
-        if (newX <= 0 || newX >= window.innerWidth - 100) { newDx *= -1; collided = true; }
-        if (newY <= 0 || newY >= window.innerHeight - 50) { newDy *= -1; collided = true; }
-
-        if (collided) setDvdColor(['red', 'blue', 'green', 'yellow', 'purple'][Math.floor(Math.random() * 5)]);
-
-        return { x: newX, y: newY, dx: newDx, dy: newDy };
+      // DVD Logic
+      setDvd(p => {
+        let nx = p.x + p.dx, ny = p.y + p.dy, ndx = p.dx, ndy = p.dy;
+        if (nx<=0 || nx>=window.innerWidth-60) ndx*=-1;
+        if (ny<=0 || ny>=window.innerHeight-40) ndy*=-1;
+        return {x:nx, y:ny, dx:ndx, dy:ndy, col: p.col};
       });
 
-      requestRef.current = requestAnimationFrame(loop);
+      reqRef.current = requestAnimationFrame(loop);
     };
-    requestRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, [runnerScore]);
+    reqRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(reqRef.current);
+  }, [birdVel]);
 
-  // LOOP 2: Attention Span Decay & Auto Clicker (Interval)
+  // LOOP 2: The "1 Second" Logic (Status, Economy, Chaos)
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Decay Attention
-      setAttentionSpan(prev => {
-        if (prev <= 0) {
-             triggerVineBoom(); // Punishment
-             return 50; // Reset
-        }
-        return prev - 0.5; 
-      });
+    const secInterval = setInterval(() => {
+      // Economy
+      setPoints(p => p + cps);
+      setCrypto(c => c + (isSigma ? 0.001 : 0));
+      
+      // Decay
+      setAttention(a => Math.max(0, a - 1));
+      setPetHunger(h => Math.max(0, h - 2));
+      setBattery(b => Math.max(0, b - 0.1));
 
-      // Auto Clicker
-      if (autoClicker > 0) {
-        setCount(c => c + autoClicker);
+      // Random Events (Feature 53: RNG Hell)
+      if (Math.random() > 0.9) setFbiRaid(true); // 10% chance FBI
+      if (fbiRaid) setTimeout(() => setFbiRaid(false), 2000);
+      
+      if (Math.random() > 0.8) {
+         // Feature 54: Stock Market Crash/Pump
+         setStockPrices(prev => prev.map(p => Math.max(1, p + (Math.random() * 20 - 10))));
       }
 
-      // Collision Check for Runner (Unfair)
-      if (obstaclePos < runnerPos + 10 && obstaclePos > runnerPos - 10) {
-        setChatLog(prev => [...prev.slice(-5), "SYSTEM: SKILL ISSUE 💀"]);
-        setSocialCredit(s => s - 50);
+      if (Math.random() > 0.7) {
+         // Feature 55: IP Leak Change
+         setIpAddress(`${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`);
       }
 
-    }, 100);
-    return () => clearInterval(interval);
-  }, [autoClicker, obstaclePos, runnerPos]);
+      // Pet Death Logic
+      if (petHunger <= 0) setPetStatus("DEAD 💀");
 
-  // LOOP 3: Chaos Events (Random Intervals)
-  useEffect(() => {
-    const chaos = setInterval(() => {
-      // Fanum Tax
-      if (Math.random() > 0.85 && count > 100) {
-        const tax = Math.floor(count * 0.1);
-        setCount(c => c - tax);
-        setFanumTax(f => f + tax);
-        createPopup(`FANUM TAX -${tax} POINTS 🍔`);
-      }
+      // Virus Logic
+      if (virusProgress > 0 && virusProgress < 100) setVirusProgress(v => v + 5);
+      else if (virusProgress >= 100) { setVirusProgress(0); createPopup("SYSTEM32 DELETED"); }
 
       // Chat Spam
-      setChatLog(prev => {
-        const msg = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-        return [...prev.slice(-8), `User${Math.floor(Math.random()*999)}: ${msg}`];
-      });
-
-      // Fake Notification
-      if (Math.random() > 0.9) {
-        const notif = NOTIFICATIONS[Math.floor(Math.random() * NOTIFICATIONS.length)];
-        setNotifications(prev => [...prev, {id: Date.now(), text: notif}]);
-        setTimeout(() => setNotifications(p => p.slice(1)), 3000);
-      }
+      setChat(c => [...c.slice(-5), `${["xQc", "Kai", "Speed", "NPC"][Math.floor(Math.random()*4)]}: ${PHRASES[Math.floor(Math.random()*PHRASES.length)]}`]);
 
     }, 1000);
-    return () => clearInterval(chaos);
-  }, [count]);
+    return () => clearInterval(secInterval);
+  }, [cps, isSigma, fbiRaid, petHunger, virusProgress]);
 
-  // --- INTERACTION HANDLERS ---
+  // --- INTERACTIONS ---
 
-  const handleBrainrotClick = () => {
-    setCount(c => c + clickPower);
-    setAttentionSpan(a => Math.min(100, a + 5)); // Clicking restores attention
-    setSusMeter(s => Math.min(100, s + 2));
+  const handleClick = (e) => {
+    setPoints(p => p + (1 * clickMult));
+    setAttention(a => Math.min(100, a + 5));
     
-    // Metal Pipe Sound Effect Logic (Visual)
-    if (Math.random() > 0.95) {
-      document.body.style.transform = `rotate(${Math.random() * 10 - 5}deg)`;
-      setTimeout(() => document.body.style.transform = 'none', 200);
-      triggerVineBoom();
-    }
-  };
-
-  const triggerVineBoom = () => {
+    // Feature 56: Mouse Trail Logic
     const id = Date.now();
-    setVineBooms(prev => [...prev, id]);
-    setTimeout(() => setVineBooms(prev => prev.filter(i => i !== id)), 600);
+    setMouseTrail(prev => [...prev, {id, x: e.clientX, y: e.clientY, emoji: EMOJIS[Math.floor(Math.random()*EMOJIS.length)]}]);
+    setTimeout(() => setMouseTrail(prev => prev.filter(i => i.id !== id)), 1000);
+
+    // Feature 57: Screen Crack Chance
+    if (Math.random() > 0.98) setScreenCracked(true);
+    
+    // Feature 58: Ascend Chance
+    if (points > 1000 && Math.random() > 0.99) setAscended(true);
   };
 
-  const createPopup = (text) => {
-    const id = Date.now();
-    const x = Math.random() * (window.innerWidth - 200);
-    const y = Math.random() * (window.innerHeight - 100);
-    setPopups(prev => [...prev, { id, text, x, y }]);
-  };
+  const jumpBird = () => setBirdVel(-8);
 
-  const spinLootbox = () => {
-    if (count < 100) return createPopup("NOT ENOUGH POINTS BRO 💀");
-    if (isSpinning) return;
-    
-    setCount(c => c - 100);
-    setIsSpinning(true);
-    const winIndex = Math.floor(Math.random() * LOOT_TX.length);
-    const extraSpins = 20; // Visual spins
-    const targetOffset = (extraSpins * LOOT_TX.length + winIndex) * 100;
-    
-    setSpinOffset(targetOffset);
-    
-    setTimeout(() => {
-      setIsSpinning(false);
-      setSpinOffset(0);
-      setLastWin(LOOT_TX[winIndex]);
-      createPopup(`UNBOXED: ${LOOT_TX[winIndex]} 🔥`);
-      if (winIndex > 7) {
-        triggerVineBoom();
-        setClickPower(p => p * 2);
+  const feedPet = () => {
+      if (points >= 50) {
+          setPoints(p => p - 50);
+          setPetHunger(h => Math.min(100, h + 30));
+          setMewing(m => m + 1);
       }
-    }, 4000);
+  };
+
+  const createPopup = (msg) => {
+      const id = Date.now() + Math.random();
+      setPopups(p => [...p, {id, x: Math.random()*window.innerWidth/2, y: Math.random()*window.innerHeight/2, msg}]);
   };
 
   const buyUpgrade = (type) => {
-    if (type === 'rizz') {
-        setRizzLevel(Math.floor(Math.random() * 100));
-        setMewingStreak(m => m + 1);
-    }
-    if (type === 'sigma' && count >= 500) {
-        setCount(c => c - 500);
-        setIsSigma(true);
-        setSocialCredit(s => s + 1000);
-    }
-    if (type === 'autoclick' && count >= 200) {
-        setCount(c => c - 200);
-        setAutoClicker(a => a + 5);
-    }
+      if (type === 'cps' && points >= 100) { setPoints(p=>p-100); setCps(c=>c+5); }
+      if (type === 'mult' && points >= 500) { setPoints(p=>p-500); setClickMult(m=>m*2); }
+      if (type === 'virus') { setVirusProgress(1); } // Feature 59: Install Virus
+      if (type === 'nft' && points >= 1000) { setPoints(p=>p-1000); createPopup(`MINTED APE #${Math.floor(Math.random()*9999)}`); } // Feature 60: NFTs
   };
 
   return (
-    <div className={`brainrot-container ${isOhio ? 'ohio-mode' : ''} ${deepFried ? 'deep-fried' : ''} ${backrooms ? 'backrooms-mode' : ''}`}
-         style={{filter: grimaceShake ? 'hue-rotate(270deg) blur(4px)' : ''}}>
+    <div className={`brainrot-container ${isOhio ? 'ohio-mode' : ''} ${ascended ? 'ascended' : ''}`} 
+         style={{filter: deepFried ? 'contrast(200%) saturate(500%)' : 'none'}}
+         onClick={handleClick}>
 
-      {/* OVERLAYS */}
-      <div className="attention-container">
-        <div className="attention-bar" style={{width: `${attentionSpan}%`}}>
-            ATTENTION SPAN (CLICK TO SURVIVE)
-        </div>
-      </div>
+      {/* --- OVERLAYS LAYER --- */}
+      {fbiRaid && <div className="fbi-raid" style={{position:'fixed', inset:0, zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', fontSize:'5rem', color:'white', fontWeight:'bold'}}>FBI OPEN UP 🚨</div>}
+      {screenCracked && <div className="screen-crack"></div>}
+      <div className="activate-windows">Activate Windows<br/><span style={{fontSize:'1rem'}}>Go to Settings to activate Windows.</span></div>
+      <div className="dvd-logo" style={{left:dvd.x, top:dvd.y, color:dvd.col}}>DVD</div>
+      
+      {/* Feature 61: Mouse Trails */}
+      {mouseTrail.map(m => <div key={m.id} className="mouse-trail" style={{left:m.x, top:m.y}}>{m.emoji}</div>)}
 
-      {/* DVD LOGO */}
-      <div className="dvd-logo" style={{left: dvdPos.x, top: dvdPos.y, color: dvdColor}}>
-        DVD
-      </div>
-
-      {/* VINE BOOMS */}
-      {vineBooms.map(id => <div key={id} className="vine-boom">💥 BOOM 💥</div>)}
-
-      {/* MAIN CONTENT */}
-      <h1 className="rainbow-text shake-constant">ULTIMATE BRAINROT v3.0</h1>
-
-      <div className="card" style={{background: '#444'}}>
-        <div style={{display:'flex', justifyContent:'space-between', fontSize: '1.2rem'}}>
-            <span>🧠 Points: {count}</span>
-            <span>🇨🇳 Social Credit: {socialCredit}</span>
-            <span>💵 V-Bucks: {vBucks}</span>
-        </div>
-      </div>
-
-      <div style={{display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px'}}>
-          {/* LEFT COLUMN */}
-          <div>
-              <button onClick={handleBrainrotClick} style={{fontSize: '2.5rem', width: '100%', height: '150px'}} className="shake-constant">
-                  🚽 CLICK ME ({clickPower}x)
-              </button>
-
-              {/* LOOTBOX AREA */}
-              <div className="card">
-                <h3>🎰 GAMBLE CORE (Cost: 100)</h3>
-                <div className="lootbox-container">
-                    <div className="loot-marker"></div>
-                    <div className="lootbox-strip" style={{transform: `translateX(-${spinOffset}px)`}}>
-                        {/* Repeat array to simulate infinite strip */}
-                        {[...LOOT_TX, ...LOOT_TX, ...LOOT_TX, ...LOOT_TX, ...LOOT_TX, ...LOOT_TX, ...LOOT_TX].map((item, i) => (
-                            <div key={i} className="loot-item">{item}</div>
-                        ))}
-                    </div>
-                </div>
-                <button onClick={spinLootbox} disabled={isSpinning} style={{marginTop:'10px'}}>OPEN CASE 📦</button>
-                {lastWin && <p>Last Pull: {lastWin}</p>}
-              </div>
-
-              {/* UPGRADES */}
-              <div className="card" style={{display:'flex', flexWrap:'wrap', gap:'5px'}}>
-                  <button onClick={() => buyUpgrade('rizz')}>Rizz Check (Free)</button>
-                  <button onClick={() => buyUpgrade('autoclick')}>Buy NPC Farmer (200pts)</button>
-                  <button onClick={() => buyUpgrade('sigma')}>Become Sigma (500pts)</button>
-                  <button onClick={() => setDeepFried(!deepFried)}>Toggle Deep Fry 🍟</button>
-                  <button onClick={() => setBackrooms(!backrooms)}>Noclip Backrooms 🟨</button>
-                  <button onClick={() => setVBucks(v => v + 1000)}>FREE V-BUCKS GENERATOR (NO SCAM)</button>
-              </div>
-          </div>
-
-          {/* RIGHT COLUMN */}
-          <div>
-              {/* MINIGAMES */}
-              <div className="card">
-                  <h4>🏃 Subway Surfers 🏃</h4>
-                  <div style={{background:'#555', height:'100px', position:'relative', overflow:'hidden', border:'2px solid yellow'}}>
-                      <div style={{position:'absolute', bottom:0, left:`${runnerPos}%`, fontSize:'30px', transition:'left 0.1s'}}>🛹</div>
-                      <div style={{position:'absolute', bottom:0, left:`${obstaclePos}%`, fontSize:'30px'}}>🚓</div>
-                  </div>
-                  <div style={{display:'flex', justifyContent:'center'}}>
-                      <button onMouseDown={() => setRunnerPos(20)} onMouseUp={() => setRunnerPos(50)}>L</button>
-                      <button onMouseDown={() => setRunnerPos(80)} onMouseUp={() => setRunnerPos(50)}>R</button>
-                  </div>
-                  <p>Score: {runnerScore}</p>
-              </div>
-
-              {/* CHAT LOG */}
-              <div className="card" style={{textAlign:'left', height:'200px', overflowY:'hidden', fontFamily:'monospace', fontSize:'0.8rem'}}>
-                  <h4 style={{color:'red'}}>🔴 LIVE LEAK CHAT</h4>
-                  {chatLog.map((m, i) => <div key={i} style={{borderBottom:'1px solid #555'}}>{m}</div>)}
-              </div>
-
-              {/* METERS */}
-              <div className="card">
-                  <p>Rizz: {rizzLevel}% {rizzLevel > 90 ? "🥵" : "💀"}</p>
-                  <p>Mewing Streak: {mewingStreak} days 🤫</p>
-                  <p>Sus Meter: {susMeter}% ⛔</p>
-                  <button onClick={() => setGrimaceShake(true)}>DRINK GRIMACE SHAKE</button>
-              </div>
-          </div>
-      </div>
-
-      {/* NOTIFICATIONS */}
-      <div style={{position: 'fixed', top: '50px', right: '10px', zIndex: 999}}>
-          {notifications.map(n => (
-              <div key={n.id} style={{background: '#333', border: '1px solid white', padding: '10px', margin: '5px', display: 'flex', alignItems: 'center', gap: '10px'}}>
-                  🔔 {n.text}
-              </div>
-          ))}
-      </div>
-
-      {/* POPUPS */}
-      {popups.map(p => (
-        <div key={p.id} style={{position:'fixed', top:p.y, left:p.x, background:'blue', padding:'20px', border:'4px outset white', zIndex:1000}}>
-            <p>{p.text}</p>
-            <button onClick={() => setPopups(curr => curr.filter(i => i.id !== p.id))}>OK</button>
-        </div>
-      ))}
-
-      {/* MINECRAFT PARKOUR OVERLAY */}
-      <div className="mc-parkour">
-          <div style={{color:'white'}}>
-              [Minecraft Parkour Gameplay Footage]
-              <br/>
-              (Imagine jumping blocks)
-          </div>
+      {/* --- HUD LAYER --- */}
+      <div style={{position:'fixed', top:0, width:'100%', background:'red', height:'20px', zIndex:900}}>
+          <div style={{width:`${attention}%`, background:'lime', height:'100%'}}>ATTENTION SPAN</div>
       </div>
       
-      {/* SIGMA OVERLAY */}
-      {isSigma && <div style={{position:'fixed', bottom:0, right:0, width:'150px', zIndex:2000}}>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Smiley.svg/1200px-Smiley.svg.png" style={{width:'100%', filter:'grayscale(100%)'}} alt="sigma"/>
-        <div style={{background:'black', color:'white', fontWeight:'bold'}}>SIGMA GRINDSET</div>
-      </div>}
+      <div className="stock-ticker">
+          {STOCKS.map((s, i) => <span key={s} style={{marginRight:'20px'}}>{s}: ${stockPrices[i]?.toFixed(2)} {Math.random()>0.5 ? '📈' : '📉'}</span>)}
+      </div>
+
+      {/* --- MAIN GRID --- */}
+      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px', marginTop:'40px'}}>
+          
+          {/* COL 1: STATS & ECONOMY */}
+          <div className="card">
+              <h2 className="rainbow-text">USER: SKIBIDI_69</h2>
+              <p>IP: <span style={{color:'red', fontWeight:'bold'}}>{ipAddress}</span> (LEAKED)</p>
+              <p>Points: {points.toFixed(0)} | CPS: {cps}</p>
+              <p>V-Bucks: {vBucks} | Crypto: {crypto.toFixed(4)} BTC</p>
+              <p>Social Credit: {socialCredit} 🇨🇳</p>
+              <p>Battery: {battery.toFixed(0)}% 🔋</p>
+              <div style={{background:'#333', border:'1px solid white', marginTop:'10px'}}>
+                  {virusProgress > 0 && <div style={{width:`${virusProgress}%`, background:'lime', height:'10px'}}>DOWNLOADING VIRUS...</div>}
+              </div>
+          </div>
+
+          {/* COL 2: CLICKER & UPGRADES */}
+          <div className="card">
+               <button style={{fontSize:'2rem', width:'100%'}} onClick={(e)=>{e.stopPropagation(); handleClick(e)}}>
+                   🚽 CLICK ME
+               </button>
+               <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px', marginTop:'10px'}}>
+                   <button onClick={(e)=>{e.stopPropagation(); buyUpgrade('cps')}}>Auto-Clicker (100pts)</button>
+                   <button onClick={(e)=>{e.stopPropagation(); buyUpgrade('mult')}}>2x Multiplier (500pts)</button>
+                   <button onClick={(e)=>{e.stopPropagation(); buyUpgrade('virus')}}>Download RAM (Free)</button>
+                   <button onClick={(e)=>{e.stopPropagation(); buyUpgrade('nft')}}>Mint NFT (1000pts)</button>
+                   <button onClick={(e)=>{e.stopPropagation(); setIsOhio(!isOhio)}}>Toggle Ohio</button>
+                   <button onClick={(e)=>{e.stopPropagation(); setDeepFried(!deepFried)}}>Deep Fry</button>
+                   <button onClick={(e)=>{e.stopPropagation(); setBackrooms(!backrooms)}}>Noclip</button>
+               </div>
+          </div>
+
+          {/* COL 3: PET & CHAT */}
+          <div className="card">
+              <h3>🥚 SKIBIDI PET</h3>
+              <div style={{fontSize:'3rem'}}>{petStatus === 'Alive' ? (petHunger < 30 ? '🤢' : '👾') : '🪦'}</div>
+              <p>Hunger: {petHunger}%</p>
+              <button onClick={(e)=>{e.stopPropagation(); feedPet()}} disabled={petStatus!=='Alive'}>FEED (50pts)</button>
+              
+              <div style={{marginTop:'20px', height:'150px', overflow:'hidden', background:'black', border:'1px solid lime', fontSize:'0.8rem', textAlign:'left', padding:'5px'}}>
+                  {chat.map((c,i) => <div key={i}>{c}</div>)}
+              </div>
+          </div>
+      </div>
+
+      {/* --- MINIGAMES ROW --- */}
+      <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px'}}>
+          {/* SUBWAY SURFERS */}
+          <div className="card" style={{height:'200px', position:'relative', overflow:'hidden', background:'#555'}}>
+              <h4>🏃 SUBWAY SURFERS 2</h4>
+              <div style={{position:'absolute', bottom:10, left:`${subwayPos}%`, fontSize:'2rem', transition:'0.1s'}}>🛹</div>
+              <div style={{position:'absolute', bottom:10, left:`${subwayObs}%`, fontSize:'2rem'}}>🚓</div>
+              <div style={{position:'absolute', bottom:0, width:'100%', display:'flex', justifyContent:'center', gap:'10px'}}>
+                  <button onMouseDown={()=>setSubwayPos(20)} onMouseUp={()=>setSubwayPos(50)}>L</button>
+                  <button onMouseDown={()=>setSubwayPos(80)} onMouseUp={()=>setSubwayPos(50)}>R</button>
+              </div>
+          </div>
+
+          {/* FLAPPY BIRD */}
+          <div className="card">
+              <h4>🐦 FLAPPY BIRD RTX</h4>
+              <div className="flappy-container" onClick={(e)=>{e.stopPropagation(); jumpBird()}}>
+                  <div className="flappy-bird" style={{top: birdY}}>🐦</div>
+                  <div className="flappy-pipe" style={{left: pipeX, height: pipeH}}></div>
+                  <div className="flappy-pipe" style={{left: pipeX, height: 150 - pipeH - 40, bottom: 'auto', top: 0}}></div>
+              </div>
+              <p style={{fontSize:'0.8rem'}}>Click box to jump</p>
+          </div>
+      </div>
+
+      {/* --- CHAOS POPUPS --- */}
+      {popups.map(p => (
+          <div key={p.id} style={{position:'fixed', top:p.y, left:p.x, background:'blue', color:'white', padding:'10px', border:'3px outset white', zIndex:2000}}>
+              {p.msg}
+              <button onClick={(e)=>{e.stopPropagation(); setPopups(prev=>prev.filter(i=>i.id!==p.id))}}>X</button>
+          </div>
+      ))}
+
+      {/* Feature 62: Fake Captcha */}
+      {Math.random() > 0.99 && (
+          <div style={{position:'fixed', top:'50%', left:'50%', transform:'translate(-50%, -50%)', background:'white', color:'black', padding:'20px', zIndex:10000}}>
+              <h3>ARE YOU A ROBOT?</h3>
+              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'5px'}}>
+                  {[1,2,3,4].map(i => <img key={i} src={`https://placehold.co/50x50?text=${i}`} onClick={()=>alert('WRONG!')}/>)}
+              </div>
+          </div>
+      )}
 
     </div>
   )
