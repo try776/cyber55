@@ -2,31 +2,32 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Terminal, X, Minimize, Maximize, Battery, Wifi, Volume2, Skull, Ghost, 
   Flame, AlertTriangle, Save, Cpu, Zap, TrendingUp, Music, Bomb, 
-  MessageCircle, DollarSign, Eye, Lock
+  MessageCircle, DollarSign, Eye, Lock, ShieldCheck, Trash2, Pizza, ChefHat
 } from 'lucide-react';
 
 /**
- * SKIBIDI OS - ULTIMATE BRAINROT EDITION v9000
- * JETZT MIT 200% MEHR CHAOS UND FARBEN
+ * SKIBIDI OS - ITALIAN EDITION v🤌.🤌
+ * PATCH NOTES:
+ * - Added excessive hand gestures
+ * - Replaced CPU with Pasta Processing Unit
+ * - Nonna is now watching you
  */
 
 // --- ASSETS & CONSTANTS ---
-const EMOJIS = ['💀', '🗿', '🤡', '🔥', '🚽', '🧢', '💅', '💩', '👻', '👺', '🅱️', '🥶', '💊', '🦎', '🍔', '🍆', '🍑', '🫡', '🤪', '🫠'];
+const EMOJIS = ['🤌', '🍕', '🍝', '🍷', '🍅', '🇮🇹', '🧀', '🛵', '🥖', '🍨', '🎭', '⚽', '⛪', '🕶️', '👨🏻‍🍳', '🌋'];
 const PHRASES = [
-  "GYATT", "Only in Ohio", "L + Ratio", "Skibidi Dop Dop", "Rizz God", "Cringe", 
-  "Let him cook", "SHEESH", "Glazing", "Fanum Tax", "Sussy Baka", "No Cap", 
-  "Bet", "Slaps", "Emotional Damage", "Grimace Shake", "Mewing Streak", "Looksmaxxing",
-  "It's giving...", "Main Character Energy", "NPC Behavior"
+  "Mamma Mia!", "It's a me, Mario!", "Porca Miseria!", "Gabagool?", "Fuggedaboutit", 
+  "That's Amore", "Spaghet!", "Ravioli Ravioli", "I cooka da pizza", "No Pineapple!",
+  "Gorlami", "Bippity Boppity", "Che cazzo fai?", "Una Mattina...", "Bella Ciao"
 ];
 const ADS = [
-  "DOWNLOAD MORE RAM!!!", "HOT SINGLES IN YOUR AREA", "YOU WON AN IPHONE 16", 
-  "DELETE SYSTEM32?", "FREE V-BUCKS GENERATOR", "YOUR PC HAS A VIRUS"
+  "HOT NONNAS IN YOUR AREA", "FREE PIZZA GENERATOR", "YOU WON A FERRARI", 
+  "IS YOUR PASTA AL DENTE?", "LUIGI IS CALLING...", "DOWNLOAD FREE PARMESAN"
 ];
 
 // --- HELPER COMPONENTS ---
 
 const WindowFrame = ({ title, children, onClose, x, y, z, active, onActivate, onMove }) => {
-  // Simple drag logic simulating movement
   const handleDrag = (e) => {
     if(e.buttons !== 1) return;
     onMove(x + e.movementX, y + e.movementY);
@@ -35,25 +36,25 @@ const WindowFrame = ({ title, children, onClose, x, y, z, active, onActivate, on
   return (
     <div 
       onMouseDown={onActivate}
-      className={`absolute flex flex-col border-4 ${active ? 'border-neon-pink z-50 shadow-[0_0_30px_#ff00ff]' : 'border-gray-600 z-10'} overflow-hidden transition-none`}
+      className={`absolute flex flex-col border-4 ${active ? 'border-red-600 z-50 shadow-[0_0_30px_rgba(206,43,55,0.8)]' : 'border-green-700 z-10'} overflow-hidden transition-none`}
       style={{ 
         left: x, top: y, width: '380px', height: 'auto', minHeight: '200px',
-        backgroundColor: active ? '#0a0a0a' : '#000000'
+        backgroundColor: active ? '#1a1a1a' : '#0a0a0a'
       }}
     >
       <div 
         onMouseMove={handleDrag}
-        className={`flex justify-between items-center px-2 py-1 ${active ? 'bg-gradient-to-r from-blue-700 via-purple-700 to-pink-700 animate-gradient-x' : 'bg-gray-700'} text-white select-none cursor-move`}
+        className={`flex justify-between items-center px-2 py-1 ${active ? 'bg-gradient-to-r from-green-600 via-white to-red-600' : 'bg-gray-800'} ${active ? 'text-black' : 'text-white'} select-none cursor-move border-b-2 border-white`}
       >
-        <span className="font-bold font-mono text-sm flex items-center gap-2 uppercase tracking-widest drop-shadow-md">
-           {title}
+        <span className="font-bold font-mono text-sm flex items-center gap-2 uppercase tracking-widest drop-shadow-md truncate max-w-[250px]">
+           {active && "🤌"} {title}
         </span>
-        <div className="flex gap-1">
+        <div className="flex gap-1 shrink-0">
           <button className="p-0.5 hover:bg-white/20 rounded"><Minimize size={12}/></button>
-          <button onClick={onClose} className="p-0.5 hover:bg-red-500 rounded"><X size={12}/></button>
+          <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="p-0.5 hover:bg-red-500 rounded hover:text-white"><X size={12}/></button>
         </div>
       </div>
-      <div className="flex-1 bg-black/95 text-neon-green p-3 overflow-auto font-mono text-xs relative border-t-2 border-white/10">
+      <div className="flex-1 bg-black/90 text-green-400 p-3 overflow-auto font-mono text-xs relative border-t-2 border-white/10 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]">
         {children}
       </div>
     </div>
@@ -64,100 +65,90 @@ const WindowFrame = ({ title, children, onClose, x, y, z, active, onActivate, on
 
 export default function App() {
   // --- STATE HELL ---
-  // Economy & Stats
-  const [points, setPoints] = useState(69); 
+  const [points, setPoints] = useState(1990); // Lire
   const [cps, setCps] = useState(0);
-  const [rizz, setRizz] = useState(50);
-  const [jelqing, setJelqing] = useState(0);
+  const [respect, setRespect] = useState(10); // Previously Rizz
+  const [kneading, setKneading] = useState(0); // Previously Jelqing
+  const [hasAdBlocker, setHasAdBlocker] = useState(false);
+  const [sauceRate, setSauceRate] = useState(0); // Mining
   
   // Status
-  const [battery, setBattery] = useState(100);
-  const [brainrotLevel, setBrainrotLevel] = useState(1);
+  const [hunger, setHunger] = useState(100); // Battery
   const [logs, setLogs] = useState([]);
 
   // Chaos Modes
-  const [isOhio, setIsOhio] = useState(false);
   const [deepFried, setDeepFried] = useState(false);
-  const [goonMode, setGoonMode] = useState(false); // Red light filter
+  const [mafiaMode, setMafiaMode] = useState(false); // Goon Mode
   const [screenCrack, setScreenCrack] = useState(false);
   const [bsod, setBsod] = useState(false);
-  const [rainbowMode, setRainbowMode] = useState(true);
 
   // Floating Elements
   const [popups, setPopups] = useState([]);
   const [chat, setChat] = useState([]);
   const [mouseTrail, setMouseTrail] = useState([]);
-  const [clippyMsg, setClippyMsg] = useState("It looks like you're trying to contain the cringe.");
+  const [clippyMsg, setClippyMsg] = useState("Don't forget the cannoli!");
   
-  // Windows State (Now spread out!)
-  const [windows, setWindows] = useState([
-    { id: 'stats', title: 'Task Manager (Lying)', x: 50, y: 50 },
-    { id: 'clicker', title: 'Skibidi Clicker.exe', x: 500, y: 100 },
-    { id: 'terminal', title: 'AWS CloudWatch (Leaking)', x: 50, y: 450 },
-    { id: 'soundboard', title: 'Vine Boom Soundboard', x: 900, y: 50 },
-    { id: 'jelq', title: 'Jelqing Tracker Pro', x: 500, y: 500 }
-  ]);
+  const [windows, setWindows] = useState([]);
   const [activeWindow, setActiveWindow] = useState('clicker');
+  
+  // Init
+  useEffect(() => {
+    const maxX = window.innerWidth - 400;
+    const maxY = window.innerHeight - 300;
+    setWindows([
+      { id: 'stats', title: 'Family Business (Legit)', x: Math.random() * maxX, y: Math.random() * maxY },
+      { id: 'clicker', title: 'Pizza Clicker.exe', x: Math.random() * maxX, y: Math.random() * maxY },
+      { id: 'terminal', title: 'Secret Sauce Recipe', x: Math.random() * maxX, y: Math.random() * maxY },
+      { id: 'soundboard', title: 'Italian Soundboard 🤌', x: Math.random() * maxX, y: Math.random() * maxY },
+      { id: 'knead', title: 'Dough Kneading Simulator', x: Math.random() * maxX, y: Math.random() * maxY }
+    ]);
+  }, []);
 
-  // Minigame States
-  const [subwayPos, setSubwayPos] = useState(50);
-  const [petHunger, setPetHunger] = useState(69);
-
-  // Refs
   const reqRef = useRef();
+  const popupsRef = useRef(popups);
+  popupsRef.current = popups;
 
   // --- LOGIC: CHAOS LOOPS ---
   const logToCloudWatch = (message) => {
     const timestamp = new Date().toISOString();
-    setLogs(prev => [`[${timestamp}] [CRITICAL_FAIL] ${message}`, ...prev].slice(0, 15));
+    setLogs(prev => [`[${timestamp}] [MAMMA_MIA] ${message}`, ...prev].slice(0, 15));
   };
-
-  // 1. Physics & Fast Loop (60FPS)
-  useEffect(() => {
-    const loop = () => {
-      // Mouse trail cleanup handled in render logic mostly, strictly visual here
-      if (Math.random() > 0.98) setSubwayPos(p => Math.max(10, Math.min(90, p + (Math.random() * 20 - 10))));
-      reqRef.current = requestAnimationFrame(loop);
-    };
-    reqRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(reqRef.current);
-  }, []);
 
   // 2. Game Loop (1Hz)
   useEffect(() => {
     const interval = setInterval(() => {
-      setPoints(p => p + cps);
-      setBattery(b => Math.max(0, b - 0.05));
-      setPetHunger(h => Math.max(0, h - 2));
-      setJelqing(j => Math.max(0, j - 1));
+      setPoints(p => p + cps + sauceRate);
+      setHunger(b => Math.max(0, b - 0.1));
+      setKneading(j => Math.max(0, j - 1));
 
       // Random Ad Spawner
-      if (Math.random() > 0.9) {
+      if (!hasAdBlocker && popupsRef.current.length < 6 && Math.random() > 0.85) {
         const id = Date.now();
+        const maxX = window.innerWidth - 300;
+        const maxY = window.innerHeight - 200;
+        
         const newPopup = {
           id,
-          x: Math.random() * (window.innerWidth - 300),
-          y: Math.random() * (window.innerHeight - 200),
+          x: Math.random() * maxX,
+          y: Math.random() * maxY,
           msg: ADS[Math.floor(Math.random() * ADS.length)],
-          color: ['bg-red-500', 'bg-blue-500', 'bg-yellow-500'][Math.floor(Math.random()*3)]
+          color: ['bg-green-600', 'bg-white', 'bg-red-600'][Math.floor(Math.random()*3)]
         };
+        
         setPopups(prev => [...prev, newPopup]);
-        // Sound effect visual
-        setChat(c => [...c.slice(-5), {user: "SYSTEM", msg: "*VINE BOOM*", color: "red"}]);
+        setChat(c => [...c.slice(-5), {user: "NONNA", msg: "*aggressive hand gestures*", color: "red"}]);
       }
 
-      // Clippy Talks
-      if (Math.random() > 0.8) {
-        setClippyMsg(PHRASES[Math.floor(Math.random() * PHRASES.length)]);
-      }
+      if (Math.random() > 0.9) setClippyMsg(PHRASES[Math.floor(Math.random() * PHRASES.length)]);
 
-      // Chat spam
-      const user = ["xQc", "KaiCenat", "Speed", "Skibidi"][Math.floor(Math.random()*4)];
-      setChat(prev => [...prev.slice(-8), { user, msg: PHRASES[Math.floor(Math.random()*PHRASES.length)], color: `hsl(${Math.random()*360}, 100%, 70%)` }]);
+      if (Math.random() > 0.7) {
+        const user = ["Luigi", "Mario", "Wario", "Peppino"][Math.floor(Math.random()*4)];
+        setChat(prev => [...prev.slice(-8), { user, msg: PHRASES[Math.floor(Math.random()*PHRASES.length)], color: `hsl(${Math.random()*360}, 100%, 70%)` }]);
+      }
 
     }, 1000);
     return () => clearInterval(interval);
-  }, [cps]);
+  }, [cps, hasAdBlocker, sauceRate]);
 
   // --- HANDLERS ---
 
@@ -165,9 +156,7 @@ export default function App() {
     const id = Date.now();
     setMouseTrail(prev => [...prev, { id, x: e.clientX, y: e.clientY, emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)] }]);
     setTimeout(() => setMouseTrail(prev => prev.filter(p => p.id !== id)), 1000);
-    
-    // Crack screen sometimes
-    if (Math.random() > 0.99) setScreenCrack(true);
+    if (Math.random() > 0.995) setScreenCrack(true);
   };
 
   const updateWindowPos = (id, x, y) => {
@@ -178,34 +167,39 @@ export default function App() {
   const spawnAd = () => {
     const id = Date.now();
     setPopups(prev => [...prev, {
-      id, x: Math.random() * 500, y: Math.random() * 500, 
-      msg: "URGENT: UPDATE JAVA NOW", color: "bg-red-600"
+      id, x: Math.random() * (window.innerWidth - 300), y: Math.random() * (window.innerHeight - 200), 
+      msg: "WARNING: PASTA OVERCOOKED", color: "bg-red-600"
     }]);
+  };
+
+  const nukeAds = () => {
+    setPopups([]);
+    setChat(prev => [...prev, {user: "MAFIA", msg: "Problem taken care of. 🔫", color: "green"}]);
   };
 
   // --- RENDERERS ---
 
   if (bsod) return (
-    <div className="fixed inset-0 bg-blue-700 text-white font-mono p-10 z-[99999] cursor-none flex flex-col justify-center items-center text-center">
-      <h1 className="text-9xl mb-4">:(</h1>
-      <p className="text-4xl">BRAIN ROT LEVEL CRITICAL</p>
-      <p className="text-xl mt-8">Error Code: SKIBIDI_OVERLOAD_0x69420</p>
-      <button onClick={() => setBsod(false)} className="mt-10 border p-4 hover:bg-white hover:text-blue-700">REBOOT (IF YOU DARE)</button>
+    <div className="fixed inset-0 bg-red-700 text-white font-mono p-10 z-[99999] cursor-none flex flex-col justify-center items-center text-center">
+      <h1 className="text-9xl mb-4">🤌</h1>
+      <p className="text-4xl">YOU BROKE THE SPAGHETTI!</p>
+      <p className="text-xl mt-8">Error Code: MAMA_MIA_0xPIZZA</p>
+      <button onClick={() => setBsod(false)} className="mt-10 border p-4 hover:bg-white hover:text-red-700 font-bold">COOK AGAIN</button>
     </div>
   );
 
   return (
     <div 
-        className={`w-screen h-screen overflow-hidden bg-[#050505] text-white select-none font-mono ${rainbowMode ? 'animate-hue-rotate' : ''}`}
+        className="w-screen h-screen overflow-hidden bg-[#050505] text-white select-none font-mono"
         style={{ 
-            filter: deepFried ? 'contrast(200%) saturate(400%)' : 'none',
-            cursor: "crosshair"
+            filter: deepFried ? 'contrast(200%) saturate(400%) sepia(50%)' : 'none',
+            cursor: "none" // Custom cursor in CSS
         }}
         onClick={handleGlobalClick}
     >
         {/* GLOBAL FILTERS */}
         <div className="fixed inset-0 pointer-events-none z-0 bg-grid-pattern opacity-10"></div>
-        {goonMode && <div className="fixed inset-0 pointer-events-none z-[9990] bg-red-900 mix-blend-multiply opacity-80"></div>}
+        {mafiaMode && <div className="fixed inset-0 pointer-events-none z-[9990] bg-black/80 flex items-center justify-center"><h1 className="text-9xl text-white font-serif italic">THE GODFATHER MODE</h1></div>}
         
         {/* MOUSE TRAIL */}
         {mouseTrail.map(m => (
@@ -214,52 +208,61 @@ export default function App() {
             </div>
         ))}
 
-        {/* SCREEN CRACK */}
+        {/* SCREEN CRACK (Tomato Sauce Splatter style in imagination) */}
         {screenCrack && (
-            <div className="fixed inset-0 pointer-events-none z-[9000] bg-no-repeat bg-center bg-cover opacity-80" 
-                 style={{backgroundImage: "url('https://www.transparenttextures.com/patterns/cracked-glass.png')"}}>
+             <div className="fixed inset-0 pointer-events-none z-[9000] bg-no-repeat bg-center bg-cover opacity-60 mix-blend-multiply" 
+                 style={{backgroundImage: "url('https://www.transparenttextures.com/patterns/cracked-glass.png')", backgroundColor: 'red'}}>
             </div>
         )}
 
-        {/* CLIPPY / ASSISTANT */}
-        <div className="fixed bottom-20 right-5 z-[5000] w-40 animate-bounce-slow">
-             <div className="bg-yellow-200 text-black p-2 rounded-lg text-xs mb-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+        {/* CLIPPY -> MARIO HEAD */}
+        <div className="fixed bottom-20 right-5 z-[5000] w-48 animate-bounce-slow">
+             <div className="bg-white text-black p-2 rounded-lg text-xs mb-2 border-4 border-green-600 shadow-lg font-bold italic">
                 {clippyMsg}
              </div>
-             <img src="https://upload.wikimedia.org/wikipedia/en/thumb/f/f4/Clippy.png/170px-Clippy.png" alt="Clippy" className="w-20 mx-auto" />
+             <div className="text-6xl text-center">🍄</div>
+        </div>
+
+        {/* ACTIVATE WINDOWS -> ACTIVATE PASTA */}
+        <div className="activate-windows">
+            Activate Pasta<br/>
+            <span className="text-sm">Go to Kitchen to activate Pasta.</span>
         </div>
 
         {/* AD POPUPS */}
         {popups.map(p => (
-            <div key={p.id} className={`fixed ${p.color || 'bg-gray-200'} border-4 border-white shadow-[10px_10px_0px_#000] text-black p-1 w-64 z-[6000]`} style={{left: p.x, top: p.y}}>
-                <div className="bg-blue-800 text-white text-xs px-1 flex justify-between items-center font-bold">
-                    <span>WINNER!!!</span>
-                    <button onClick={(e) => { e.stopPropagation(); setPopups(prev => prev.filter(i => i.id !== p.id))}}>X</button>
+            <div key={p.id} className={`fixed ${p.color} border-4 border-black shadow-[10px_10px_0px_#000] text-black p-1 w-64 z-[6000]`} style={{left: p.x, top: p.y}}>
+                <div className="bg-red-700 text-white text-xs px-1 flex justify-between items-center font-bold">
+                    <span>ATTENZIONE!!!</span>
+                    <button onClick={(e) => { e.stopPropagation(); setPopups(prev => prev.filter(i => i.id !== p.id))}} className="hover:text-yellow-300">X</button>
                 </div>
                 <div className="p-4 flex flex-col items-center animate-pulse">
-                    <AlertTriangle className="text-yellow-300 w-12 h-12 mb-2" />
-                    <p className="font-black text-center text-lg">{p.msg}</p>
-                    <button onClick={(e)=>{e.stopPropagation(); spawnAd()}} className="mt-2 w-full bg-green-500 hover:bg-green-400 font-bold border-b-4 border-green-800 active:border-0 active:translate-y-1">
-                        CLAIM NOW
+                    <Pizza className="text-yellow-900 w-12 h-12 mb-2 animate-spin-slow" />
+                    <p className="font-black text-center text-lg uppercase">{p.msg}</p>
+                    <button onClick={(e)=>{e.stopPropagation(); spawnAd()}} className="mt-2 w-full bg-green-600 text-white hover:bg-green-500 font-bold border-b-4 border-green-900 active:border-0 active:translate-y-1">
+                        MANGIA!
                     </button>
                 </div>
             </div>
         ))}
 
         {/* TASKBAR */}
-        <div className="fixed bottom-0 w-full h-12 bg-[#1a1a1a] border-t-4 border-neon-blue flex items-center px-2 z-[8000] gap-2 shadow-[0_-5px_20px_rgba(0,0,255,0.3)]">
+        <div className="fixed bottom-0 w-full h-12 bg-[#1a1a1a] border-t-4 border-red-600 flex items-center px-2 z-[8000] gap-2 shadow-[0_-5px_20px_rgba(255,0,0,0.3)]">
             <button 
-                onClick={() => setWindows(prev => [...prev, {id: Date.now(), title: 'New Folder', x: Math.random()*500, y: Math.random()*500}])}
-                className="bg-gradient-to-r from-green-400 to-blue-500 px-6 py-2 font-black italic text-black skew-x-[-10deg] hover:scale-105 transition-transform"
+                onClick={() => setWindows(prev => [...prev, {id: Date.now(), title: 'Pizza Box', x: Math.random()*500, y: Math.random()*500}])}
+                className="bg-gradient-to-r from-green-600 via-white to-red-600 px-4 py-2 font-black italic text-black skew-x-[-10deg] hover:scale-105 transition-transform text-xs md:text-sm border-2 border-black"
             >
-                START BRAINROT
+                START PIZZA
+            </button>
+            <button onClick={nukeAds} className="bg-black text-white px-3 py-1 font-bold border border-gray-600 flex items-center gap-1 hover:bg-gray-800">
+                <Trash2 size={16}/> CLEANER
             </button>
             <div className="flex-1"></div>
             {/* Tray Icons */}
             <div className="flex gap-4 text-xs font-mono text-gray-400 mr-4">
-                <span className="animate-pulse text-red-500 font-bold">VIRUS: DETECTED</span>
-                <span>CPU: 420%</span>
-                <span>RAM: DOWNLOADED</span>
+                {hasAdBlocker && <span className="text-green-500 flex items-center gap-1"><ShieldCheck size={14}/> MAFIA PROTECTION</span>}
+                <span className="animate-pulse text-red-500 font-bold hidden md:inline">PINEAPPLE: DETECTED</span>
+                <span>SAUCE: {points.toFixed(0)}L</span>
             </div>
         </div>
 
@@ -268,24 +271,19 @@ export default function App() {
         {/* 1. STATS WINDOW */}
         {windows.map(w => w.id === 'stats' && (
             <WindowFrame key={w.id} {...w} active={activeWindow === w.id} onActivate={() => setActiveWindow(w.id)} onMove={(x,y) => updateWindowPos(w.id, x, y)} onClose={() => setWindows(prev => prev.filter(i => i.id !== w.id))}>
-                <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="grid grid-cols-2 gap-2 text-xs text-white">
                     <div className="bg-gray-900 p-2 border border-gray-700">
-                        <div className="text-gray-500">Social Credit</div>
-                        <div className="text-neon-green text-2xl font-black">{points.toFixed(0)}</div>
+                        <div className="text-gray-400">Total Lire</div>
+                        <div className="text-yellow-400 text-2xl font-black">{points.toFixed(0)} ₤</div>
                     </div>
                     <div className="bg-gray-900 p-2 border border-gray-700">
-                        <div className="text-gray-500">Rizz Level</div>
-                        <div className="text-neon-pink text-2xl font-black">{rizz}</div>
+                        <div className="text-gray-400">Respect</div>
+                        <div className="text-purple-400 text-2xl font-black">{respect}</div>
                     </div>
                 </div>
-                <div className="mt-2 border border-red-500 p-1 bg-red-900/20">
-                    <div className="flex justify-between text-xs text-red-400">
-                        <span>ATTENTION SPAN</span>
-                        <span>{battery.toFixed(0)}%</span>
-                    </div>
-                    <div className="w-full bg-red-900 h-2 mt-1">
-                        <div className="bg-red-500 h-full animate-pulse" style={{width: `${battery}%`}}></div>
-                    </div>
+                <div className="mt-2 text-xs text-gray-400">
+                    <div>Sauce Flow: {sauceRate} L/s</div>
+                    <div>Protection: {hasAdBlocker ? "PAID" : "NONE"}</div>
                 </div>
             </WindowFrame>
         ))}
@@ -295,18 +293,31 @@ export default function App() {
             <WindowFrame key={w.id} {...w} active={activeWindow === w.id} onActivate={() => setActiveWindow(w.id)} onMove={(x,y) => updateWindowPos(w.id, x, y)} onClose={() => setWindows(prev => prev.filter(i => i.id !== w.id))}>
                  <div className="flex flex-col items-center gap-4">
                     <button 
-                        onClick={(e) => { e.stopPropagation(); setPoints(p => p + 1); logToCloudWatch("Toilet Clicked"); }}
-                        className="text-8xl hover:rotate-12 active:scale-90 transition-all cursor-pointer filter drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                        onClick={(e) => { e.stopPropagation(); setPoints(p => p + 1); logToCloudWatch("Cooked a Pizza"); }}
+                        className="text-8xl hover:rotate-45 active:scale-90 transition-all cursor-pointer filter drop-shadow-[0_0_15px_rgba(255,200,0,0.5)]"
                     >
-                        🚽
+                        🍕
                     </button>
                     <div className="grid grid-cols-2 gap-2 w-full">
-                        <button onClick={() => setCps(c => c + 1)} className="btn-retro bg-blue-900">🤖 Bot Farm (+1 CPS)</button>
-                        <button onClick={() => setRizz(r => r + 10)} className="btn-retro bg-purple-900">🧢 Buy Rizz (+10)</button>
-                        <button onClick={() => setPoints(p => p - Math.floor(p * 0.2))} className="btn-retro bg-green-900">🍔 Fanum Tax (-20%)</button>
-                        <button onClick={() => setGoonMode(!goonMode)} className="btn-retro bg-red-900">👹 Goon Mode</button>
-                        <button onClick={() => {setDeepFried(!deepFried); setRainbowMode(!rainbowMode)}} className="col-span-2 btn-retro bg-yellow-700">🍟 DEEP FRY EVERYTHING</button>
-                        <button onClick={() => setBsod(true)} className="col-span-2 bg-blue-600 text-white font-bold p-1 border-2 border-white">☠️ DELETE SYSTEM32</button>
+                        <button onClick={() => setCps(c => c + 1)} className="btn-retro bg-green-800">🤖 Mama's Helper (+1 CPS)</button>
+                        <button onClick={() => {
+                            if(points >= 500 && !hasAdBlocker) {
+                                setPoints(p => p - 500);
+                                setHasAdBlocker(true);
+                                logToCloudWatch("PAID PROTECTION MONEY");
+                            }
+                        }} className={`btn-retro ${hasAdBlocker ? 'bg-gray-600 line-through' : 'bg-blue-800'}`}>
+                            🛡️ Pay Protection (500 ₤)
+                        </button>
+                        <button onClick={() => {
+                            if(points >= 200) {
+                                setPoints(p => p - 200);
+                                setSauceRate(r => r + 5);
+                            }
+                        }} className="btn-retro bg-red-800">🍅 Tomato Farm (200 ₤)</button>
+                        <button onClick={() => setMafiaMode(!mafiaMode)} className="btn-retro bg-black border-gray-500">🕶️ Mafia Mode</button>
+                        <button onClick={() => setDeepFried(!deepFried)} className="col-span-2 btn-retro bg-yellow-700">🍟 DEEP FRY CALZONE</button>
+                        <button onClick={() => setBsod(true)} className="col-span-2 bg-red-600 text-white font-bold p-1 border-2 border-white">☠️ BREAK SPAGHETTI</button>
                     </div>
                 </div>
             </WindowFrame>
@@ -315,17 +326,16 @@ export default function App() {
         {/* 3. SOUNDBOARD (Visual) */}
         {windows.map(w => w.id === 'soundboard' && (
             <WindowFrame key={w.id} {...w} active={activeWindow === w.id} onActivate={() => setActiveWindow(w.id)} onMove={(x,y) => updateWindowPos(w.id, x, y)} onClose={() => setWindows(prev => prev.filter(i => i.id !== w.id))}>
-                <div className="grid grid-cols-3 gap-2">
-                    {["BOOM", "BRUH", "OMG", "YIPPEE", "WHAT", "METAL PIPE"].map(sound => (
+                <div className="grid grid-cols-2 gap-2">
+                    {["MAMMA MIA", "SPAGHET", "GABAGOOL", "WOW", "PIZZA", "OPERA"].map(sound => (
                         <button 
                             key={sound}
                             onClick={() => {
                                 setChat(prev => [...prev, {user: "AUDIO", msg: `*plays ${sound}*`, color: "cyan"}]);
-                                // Simulate audio vibration
                                 const id = Date.now();
                                 setWindows(win => win.map(wi => ({...wi, x: wi.x + (Math.random()*10-5), y: wi.y + (Math.random()*10-5)})));
                             }}
-                            className="bg-gray-800 hover:bg-neon-pink hover:text-black p-4 text-[10px] font-bold border border-gray-600 active:bg-white"
+                            className="bg-green-800 hover:bg-white hover:text-red-600 p-4 text-[10px] font-bold border border-white active:bg-red-600 active:text-white"
                         >
                             🔊 {sound}
                         </button>
@@ -334,22 +344,22 @@ export default function App() {
             </WindowFrame>
         ))}
 
-        {/* 4. JELQING TRACKER */}
-        {windows.map(w => w.id === 'jelq' && (
+        {/* 4. KNEADING TRACKER (formerly Jelq) */}
+        {windows.map(w => w.id === 'knead' && (
             <WindowFrame key={w.id} {...w} active={activeWindow === w.id} onActivate={() => setActiveWindow(w.id)} onMove={(x,y) => updateWindowPos(w.id, x, y)} onClose={() => setWindows(prev => prev.filter(i => i.id !== w.id))}>
                 <div className="text-center">
-                    <h3 className="text-lg font-bold mb-2">JELQ STREAK: {jelqing} 🔥</h3>
+                    <h3 className="text-lg font-bold mb-2 text-white">DOUGH KNEADED: {kneading} kg</h3>
                     <div className="w-full bg-gray-800 h-8 border-2 border-white relative overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-200" style={{width: `${Math.min(100, jelqing)}%`}}></div>
-                        <div className="absolute inset-0 flex items-center justify-center font-black mix-blend-difference">
-                            {jelqing < 50 ? 'WEAK AURA' : 'SIGMA GRINDSET'}
+                        <div className="h-full bg-white transition-all duration-200" style={{width: `${Math.min(100, kneading)}%`}}></div>
+                        <div className="absolute inset-0 flex items-center justify-center font-black text-black mix-blend-screen">
+                            {kneading < 50 ? 'NOT ENOUGH FLOUR' : 'PERFECTO!'}
                         </div>
                     </div>
                     <button 
-                        onMouseDown={() => setJelqing(j => j + 5)}
-                        className="mt-4 w-full bg-white text-black font-black text-xl py-4 active:scale-95 transition-transform"
+                        onMouseDown={() => setKneading(j => j + 5)}
+                        className="mt-4 w-full bg-yellow-100 text-black font-black text-xl py-4 active:scale-95 transition-transform border-4 border-yellow-600"
                     >
-                        MOG NOW
+                        👊 KNEAD DOUGH
                     </button>
                 </div>
             </WindowFrame>
@@ -358,7 +368,7 @@ export default function App() {
         {/* 5. TERMINAL */}
         {windows.map(w => w.id === 'terminal' && (
             <WindowFrame key={w.id} {...w} active={activeWindow === w.id} onActivate={() => setActiveWindow(w.id)} onMove={(x,y) => updateWindowPos(w.id, x, y)} onClose={() => setWindows(prev => prev.filter(i => i.id !== w.id))}>
-                <div className="h-full flex flex-col-reverse font-mono text-[10px] text-green-500 overflow-hidden">
+                <div className="h-full flex flex-col-reverse font-mono text-[10px] text-green-500 overflow-hidden bg-black">
                     {logs.map((l, i) => <div key={i} className="whitespace-nowrap">{l}</div>)}
                 </div>
             </WindowFrame>
