@@ -8,9 +8,9 @@ import {
 /**
  * SKIBIDI OS - ITALIAN EDITION v🤌.🤌
  * PATCH NOTES:
- * - Added excessive hand gestures
- * - Replaced CPU with Pasta Processing Unit
- * - Nonna is now watching you
+ * - Added AUDIO ENGINE (Web Audio API + TTS)
+ * - Loud noises included
+ * - Nonna is now audible
  */
 
 // --- ASSETS & CONSTANTS ---
@@ -24,6 +24,74 @@ const ADS = [
   "HOT NONNAS IN YOUR AREA", "FREE PIZZA GENERATOR", "YOU WON A FERRARI", 
   "IS YOUR PASTA AL DENTE?", "LUIGI IS CALLING...", "DOWNLOAD FREE PARMESAN"
 ];
+
+// --- SOUND ENGINE ---
+const playSound = (type) => {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    const now = ctx.currentTime;
+
+    if (type === 'click') {
+      // High pitch beep (Pizza click)
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.start(now);
+      osc.stop(now + 0.1);
+    } else if (type === 'boom') {
+      // Vine Boom style (Low freq drop)
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(10, now + 0.5);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+      osc.start(now);
+      osc.stop(now + 0.5);
+    } else if (type === 'error') {
+      // Windows Error style
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, now);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else if (type === 'coin') {
+      // Mario Coin style
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(900, now);
+      osc.frequency.setValueAtTime(1200, now + 0.05);
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
+    else {
+      // Text to Speech for words
+      const utterance = new SpeechSynthesisUtterance(type);
+      utterance.rate = 1.1;
+      utterance.pitch = Math.random() * 0.4 + 0.8; // Random pitch for funny effect
+      utterance.volume = 1;
+      
+      // Try to find Italian voice, fallback to whatever
+      const voices = window.speechSynthesis.getVoices();
+      const itVoice = voices.find(v => v.lang.includes('it') || v.lang.includes('IT'));
+      if (itVoice) utterance.voice = itVoice;
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  } catch (e) {
+    console.error("Audio failed:", e);
+  }
+};
 
 // --- HELPER COMPONENTS ---
 
@@ -51,7 +119,7 @@ const WindowFrame = ({ title, children, onClose, x, y, z, active, onActivate, on
         </span>
         <div className="flex gap-1 shrink-0">
           <button className="p-0.5 hover:bg-white/20 rounded"><Minimize size={12}/></button>
-          <button onClick={(e) => { e.stopPropagation(); onClose(); }} className="p-0.5 hover:bg-red-500 rounded hover:text-white"><X size={12}/></button>
+          <button onClick={(e) => { e.stopPropagation(); onClose(); playSound('error'); }} className="p-0.5 hover:bg-red-500 rounded hover:text-white"><X size={12}/></button>
         </div>
       </div>
       <div className="flex-1 bg-black/90 text-green-400 p-3 overflow-auto font-mono text-xs relative border-t-2 border-white/10 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]">
@@ -67,18 +135,18 @@ export default function App() {
   // --- STATE HELL ---
   const [points, setPoints] = useState(1990); // Lire
   const [cps, setCps] = useState(0);
-  const [respect, setRespect] = useState(10); // Previously Rizz
-  const [kneading, setKneading] = useState(0); // Previously Jelqing
+  const [respect, setRespect] = useState(10); 
+  const [kneading, setKneading] = useState(0); 
   const [hasAdBlocker, setHasAdBlocker] = useState(false);
-  const [sauceRate, setSauceRate] = useState(0); // Mining
+  const [sauceRate, setSauceRate] = useState(0); 
   
   // Status
-  const [hunger, setHunger] = useState(100); // Battery
+  const [hunger, setHunger] = useState(100); 
   const [logs, setLogs] = useState([]);
 
   // Chaos Modes
   const [deepFried, setDeepFried] = useState(false);
-  const [mafiaMode, setMafiaMode] = useState(false); // Goon Mode
+  const [mafiaMode, setMafiaMode] = useState(false); 
   const [screenCrack, setScreenCrack] = useState(false);
   const [bsod, setBsod] = useState(false);
 
@@ -93,6 +161,9 @@ export default function App() {
   
   // Init
   useEffect(() => {
+    // Force load voices
+    window.speechSynthesis.getVoices();
+    
     const maxX = window.innerWidth - 400;
     const maxY = window.innerHeight - 300;
     setWindows([
@@ -137,6 +208,7 @@ export default function App() {
         
         setPopups(prev => [...prev, newPopup]);
         setChat(c => [...c.slice(-5), {user: "NONNA", msg: "*aggressive hand gestures*", color: "red"}]);
+        playSound('boom'); // Plays Vine Boom sound
       }
 
       if (Math.random() > 0.9) setClippyMsg(PHRASES[Math.floor(Math.random() * PHRASES.length)]);
@@ -156,7 +228,10 @@ export default function App() {
     const id = Date.now();
     setMouseTrail(prev => [...prev, { id, x: e.clientX, y: e.clientY, emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)] }]);
     setTimeout(() => setMouseTrail(prev => prev.filter(p => p.id !== id)), 1000);
-    if (Math.random() > 0.995) setScreenCrack(true);
+    if (Math.random() > 0.995) {
+      setScreenCrack(true);
+      playSound('boom');
+    }
   };
 
   const updateWindowPos = (id, x, y) => {
@@ -170,11 +245,13 @@ export default function App() {
       id, x: Math.random() * (window.innerWidth - 300), y: Math.random() * (window.innerHeight - 200), 
       msg: "WARNING: PASTA OVERCOOKED", color: "bg-red-600"
     }]);
+    playSound('error');
   };
 
   const nukeAds = () => {
     setPopups([]);
     setChat(prev => [...prev, {user: "MAFIA", msg: "Problem taken care of. 🔫", color: "green"}]);
+    playSound('coin');
   };
 
   // --- RENDERERS ---
@@ -208,7 +285,7 @@ export default function App() {
             </div>
         ))}
 
-        {/* SCREEN CRACK (Tomato Sauce Splatter style in imagination) */}
+        {/* SCREEN CRACK */}
         {screenCrack && (
              <div className="fixed inset-0 pointer-events-none z-[9000] bg-no-repeat bg-center bg-cover opacity-60 mix-blend-multiply" 
                  style={{backgroundImage: "url('https://www.transparenttextures.com/patterns/cracked-glass.png')", backgroundColor: 'red'}}>
@@ -293,18 +370,19 @@ export default function App() {
             <WindowFrame key={w.id} {...w} active={activeWindow === w.id} onActivate={() => setActiveWindow(w.id)} onMove={(x,y) => updateWindowPos(w.id, x, y)} onClose={() => setWindows(prev => prev.filter(i => i.id !== w.id))}>
                  <div className="flex flex-col items-center gap-4">
                     <button 
-                        onClick={(e) => { e.stopPropagation(); setPoints(p => p + 1); logToCloudWatch("Cooked a Pizza"); }}
+                        onClick={(e) => { e.stopPropagation(); setPoints(p => p + 1); logToCloudWatch("Cooked a Pizza"); playSound('click'); }}
                         className="text-8xl hover:rotate-45 active:scale-90 transition-all cursor-pointer filter drop-shadow-[0_0_15px_rgba(255,200,0,0.5)]"
                     >
                         🍕
                     </button>
                     <div className="grid grid-cols-2 gap-2 w-full">
-                        <button onClick={() => setCps(c => c + 1)} className="btn-retro bg-green-800">🤖 Mama's Helper (+1 CPS)</button>
+                        <button onClick={() => {setCps(c => c + 1); playSound('coin');}} className="btn-retro bg-green-800">🤖 Mama's Helper (+1 CPS)</button>
                         <button onClick={() => {
                             if(points >= 500 && !hasAdBlocker) {
                                 setPoints(p => p - 500);
                                 setHasAdBlocker(true);
                                 logToCloudWatch("PAID PROTECTION MONEY");
+                                playSound('coin');
                             }
                         }} className={`btn-retro ${hasAdBlocker ? 'bg-gray-600 line-through' : 'bg-blue-800'}`}>
                             🛡️ Pay Protection (500 ₤)
@@ -313,6 +391,7 @@ export default function App() {
                             if(points >= 200) {
                                 setPoints(p => p - 200);
                                 setSauceRate(r => r + 5);
+                                playSound('coin');
                             }
                         }} className="btn-retro bg-red-800">🍅 Tomato Farm (200 ₤)</button>
                         <button onClick={() => setMafiaMode(!mafiaMode)} className="btn-retro bg-black border-gray-500">🕶️ Mafia Mode</button>
@@ -334,6 +413,7 @@ export default function App() {
                                 setChat(prev => [...prev, {user: "AUDIO", msg: `*plays ${sound}*`, color: "cyan"}]);
                                 const id = Date.now();
                                 setWindows(win => win.map(wi => ({...wi, x: wi.x + (Math.random()*10-5), y: wi.y + (Math.random()*10-5)})));
+                                playSound(sound);
                             }}
                             className="bg-green-800 hover:bg-white hover:text-red-600 p-4 text-[10px] font-bold border border-white active:bg-red-600 active:text-white"
                         >
@@ -356,7 +436,7 @@ export default function App() {
                         </div>
                     </div>
                     <button 
-                        onMouseDown={() => setKneading(j => j + 5)}
+                        onMouseDown={() => { setKneading(j => j + 5); playSound('click'); }}
                         className="mt-4 w-full bg-yellow-100 text-black font-black text-xl py-4 active:scale-95 transition-transform border-4 border-yellow-600"
                     >
                         👊 KNEAD DOUGH
